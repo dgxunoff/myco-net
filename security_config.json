@@ -1,0 +1,21 @@
+{
+  "email": {
+    "enabled": false,
+    "smtp_server": "smtp.gmail.com",
+    "smtp_port": 587,
+    "from_email": "mycoshield@company.com",
+    "security_team": "security@company.com",
+    "username": "",
+    "password": ""
+  },
+  "firewall": {
+    "enabled": true,
+    "auto_block": true,
+    "block_duration": 3600
+  },
+  "monitoring": {
+    "enhanced_logging": true,
+    "connection_threshold": 10,
+    "alert_threshold": 0.5
+  }
+}
