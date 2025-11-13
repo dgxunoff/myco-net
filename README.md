@@ -1,8 +1,8 @@
-# 🍄 MycoShield - Mycelium Network Defense System
+# 🍄 MycoShield - Enterprise Mycelium Network Defense Platform
 
-**Shaastra Biogen 2026 Winning Project**
+**Shaastra Biogen 2026 Winning Project → Enterprise Security Platform**
 
-A revolutionary **Graph Neural Network (GNN)** with **Reinforcement Learning** inspired by mycelium networks for **zero-day cyberattack detection**.
+A revolutionary **Graph Neural Network (GNN)** with **Reinforcement Learning** and **Multi-Modal Detection** inspired by mycelium networks for **zero-day cyberattack detection** and **enterprise endpoint security**.
 
 ## 🚀 Quick Start
 
@@ -10,13 +10,17 @@ A revolutionary **Graph Neural Network (GNN)** with **Reinforcement Learning** i
 # Install as package
 pip install -e .
 
-# Run applications
-streamlit run apps/streamlit_app.py  # Main app
-streamlit run apps/rl_app.py         # RL-enhanced app
+# Run applications (4 deployment levels)
+streamlit run apps/streamlit_app.py    # Basic: Network detection
+streamlit run apps/rl_app.py           # Advanced: RL-enhanced
+streamlit run apps/multimodal_app.py   # Professional: Multi-modal
+streamlit run apps/enterprise_app.py   # Enterprise: Full platform
 
 # Or use console commands
-mycoshield-app    # Main interface
-mycoshield-rl     # RL interface
+mycoshield-app          # Basic network detection
+mycoshield-rl           # RL-enhanced detection
+mycoshield-multimodal   # Network + Host + Logs
+mycoshield-enterprise   # Complete security platform
 ```
 
 ## 🧬 Core Concept
@@ -29,47 +33,94 @@ mycoshield-rl     # RL interface
 
 ## 🎯 Features
 
-### ✅ Implemented
+### ✅ Network Detection (Basic)
 - **GNN Model**: 3-layer Graph Convolutional Network
-- **RL Agent**: Deep Q-Network for adaptive responses
 - **PCAP Parser**: Real network traffic analysis
-- **Live Monitoring**: Real-time Zeek log processing
 - **3D Visualization**: Interactive mycelium network (Plotly)
+- **NSL-KDD Training**: 125K+ real attack samples (80%+ accuracy)
+
+### ✅ RL Enhancement (Advanced)
+- **RL Agent**: Deep Q-Network for adaptive responses
 - **Auto-Isolation**: Infected node quarantine
-- **NSL-KDD Training**: 125K+ real attack samples
+- **Action Learning**: ALLOW/MONITOR/ISOLATE decisions
+
+### ✅ Multi-Modal Detection (Professional)
+- **Host Monitoring**: Process & file system analysis
+- **Log Analysis**: System & application log parsing
+- **Correlation Engine**: Cross-source threat validation
+- **Live Monitoring**: Real-time Zeek log processing
+
+### ✅ Enterprise Platform (Complete)
+- **Registry Monitoring**: Windows registry change detection
+- **Memory Analysis**: Code injection & process anomalies
+- **Malware Scanning**: YARA-based signature detection
+- **Behavioral Analysis**: ML-based anomaly detection
+- **User Activity**: Session & privilege escalation monitoring
+- **Device Fingerprinting**: Hardware asset management
+- **Real Firewall Integration**: Actual IP blocking
+- **Incident Response**: Automated threat containment
+- **Security Dashboard**: Enterprise monitoring interface
 
 ### 🔄 Architecture
 ```
 Live Traffic → Zeek Logs → Graph Builder → MyceliumGNN → RL Agent → Actions → 3D Viz
 ```
 
-## 🎮 Usage Options
+## 🎮 Deployment Levels
 
-### **1. Main Application**
+### **Level 1: Basic Network Detection** 🍄
 ```bash
-streamlit run apps/streamlit_app.py
+mycoshield-app
 ```
+**Perfect for**: Hackathons, demos, proof-of-concept
 - Upload PCAP files
 - Demo traffic generation
 - GNN-based threat detection
 - 3D mycelium visualization
+- Bio-inspired network analysis
 
-### **2. RL-Enhanced Application**
+### **Level 2: RL-Enhanced Detection** 🤖
 ```bash
-streamlit run apps/rl_app.py
+mycoshield-rl
 ```
+**Perfect for**: AI competitions, ML challenges
 - Autonomous decision making
 - Adaptive threat response
 - Real-time learning
 - Action visualization (Allow/Monitor/Isolate)
+- Reinforcement learning showcase
 
-### **3. Live Zeek Integration** (Linux/macOS)
+### **Level 3: Multi-Modal Detection** 🔍
+```bash
+mycoshield-multimodal
+```
+**Perfect for**: Security competitions, enterprise demos
+- Network + Host + Log analysis
+- Multi-source correlation
+- Real firewall blocking
+- Incident logging
+- Live monitoring dashboard
+
+### **Level 4: Enterprise Platform** 🏢
+```bash
+mycoshield-enterprise
+```
+**Perfect for**: Production deployment, startup demos
+- Complete endpoint security
+- Registry & memory monitoring
+- Malware detection (YARA rules)
+- Behavioral analysis
+- Device fingerprinting
+- Automated incident response
+- Enterprise security dashboard
+
+### **Live Zeek Integration** (Linux/macOS)
 ```bash
 # Start Zeek monitoring
 zeek -i any zeek_mycoshield.zeek
 
-# Run live app
-streamlit run apps/streamlit_app.py
+# Run any application level
+mycoshield-app  # or any other level
 ```
 - Real-time network capture
 - Live mycelium growth
@@ -125,14 +176,32 @@ python train_rl.py  # Train RL agent
 - **✅ Healthy**: Score < 0.5 (Green mycelium)
 - **🤖 RL Actions**: Color-coded by decision type
 
-## 🔬 Technical Stack
+## 🔬 Enterprise Technical Stack
 
+### **AI/ML Core**
 - **Deep Learning**: PyTorch + PyTorch Geometric
 - **Reinforcement Learning**: Deep Q-Network (DQN)
-- **Frontend**: Streamlit + Plotly 3D
-- **Network Monitoring**: Zeek + Scapy
 - **Graph Processing**: NetworkX
-- **Dataset**: NSL-KDD (125K+ samples)
+- **Dataset**: NSL-KDD (125K+ samples, 80%+ accuracy)
+
+### **Security Technologies**
+- **Network Monitoring**: Zeek + Scapy + psutil
+- **Malware Detection**: YARA rules engine
+- **Firewall Integration**: Windows/Linux/macOS
+- **Memory Analysis**: Process injection detection
+- **Registry Monitoring**: Windows registry tracking
+
+### **Platform & UI**
+- **Frontend**: Streamlit + Plotly 3D
+- **Visualization**: Interactive mycelium networks
+- **Dashboard**: Enterprise security metrics
+- **APIs**: RESTful security endpoints
+
+### **DevOps & Quality**
+- **Testing**: pytest + unittest + mocking
+- **Packaging**: setuptools + pip installable
+- **Configuration**: JSON-based security policies
+- **Logging**: Comprehensive incident tracking
 
 ## 🧪 Attack Simulations
 
@@ -147,34 +216,94 @@ ping -c 5 203.0.113.1
 # Click "Generate Demo Traffic" in apps
 ```
 
-## 📁 Project Structure
+## 📁 Enterprise Project Structure
 
 ```
 MycoNet/
-├── mycoshield/              # Core Package
-│   ├── models.py           # GNN & DQN architectures
-│   ├── core.py             # Network processing
-│   ├── data.py             # PCAP & Zeek parsing
-│   ├── visualization.py    # 3D rendering
-│   └── rl.py              # Reinforcement learning
+├── mycoshield/                 # Core Security Package
+│   ├── models.py              # GNN & DQN architectures
+│   ├── core.py                # Network processing
+│   ├── data.py                # PCAP & Zeek parsing
+│   ├── visualization.py       # 3D rendering
+│   ├── rl.py                  # Reinforcement learning
+│   ├── security.py            # Firewall & enforcement
+│   ├── host.py                # Host monitoring
+│   ├── endpoint.py            # Endpoint security
+│   └── enterprise.py          # Enterprise orchestration
 │
-├── apps/                   # Applications
-│   ├── streamlit_app.py   # Main interface
-│   └── rl_app.py          # RL interface
+├── apps/                      # Multi-Level Applications
+│   ├── streamlit_app.py      # Level 1: Basic
+│   ├── rl_app.py             # Level 2: RL-Enhanced
+│   ├── multimodal_app.py     # Level 3: Multi-Modal
+│   └── enterprise_app.py     # Level 4: Enterprise
 │
-├── train_nslkdd.py        # GNN training
-├── train_rl.py            # RL training
-└── zeek_mycoshield.zeek   # Zeek policy
+├── tests/                     # Comprehensive Test Suite
+│   ├── test_models.py        # Neural network tests
+│   ├── test_core.py          # Core component tests
+│   ├── test_security.py      # Security enforcement tests
+│   ├── test_rl.py            # RL agent tests
+│   ├── test_data.py          # Data processing tests
+│   ├── test_integration.py   # End-to-end tests
+│   └── run_tests.py          # Test runner
+│
+├── train_nslkdd.py           # GNN training (NSL-KDD)
+├── train_rl.py               # RL training
+├── security_config.json      # Security configuration
+├── requirements.txt          # Dependencies
+├── setup.py                  # Package installation
+└── zeek_mycoshield.zeek      # Zeek policy
 ```
 
-## 🎪 Demo Scenarios
+## 🎪 Demo Scenarios by Level
 
-1. **Static Analysis**: Upload PCAP → GNN detection → 3D visualization
-2. **RL Decision Making**: Generate traffic → RL agent actions → Learning
-3. **Live Monitoring**: Zeek capture → Real-time analysis → Auto-response
-4. **Attack Simulation**: Built-in scenarios → Threat detection → Isolation
+### **Level 1 Demos** (Hackathons)
+1. **Bio-Inspired Visualization**: 3D mycelium network growth
+2. **PCAP Analysis**: Upload → GNN detection → Spore alerts
+3. **Demo Traffic**: Instant threat simulation
+
+### **Level 2 Demos** (AI Competitions)
+1. **RL Learning**: Watch agent learn optimal responses
+2. **Adaptive Decisions**: ALLOW/MONITOR/ISOLATE actions
+3. **Performance Metrics**: Learning curves & accuracy
+
+### **Level 3 Demos** (Security Events)
+1. **Multi-Source Detection**: Network + Host + Logs
+2. **Correlation Analysis**: Cross-source threat validation
+3. **Real Enforcement**: Actual firewall blocking
+
+### **Level 4 Demos** (Enterprise/Startup)
+1. **Complete Platform**: Full endpoint security
+2. **Live Monitoring**: Real-time threat hunting
+3. **Incident Response**: Automated containment
+4. **Security Dashboard**: Enterprise metrics
+
+## 🧪 Testing & Quality
+
+```bash
+# Run comprehensive test suite
+python tests/run_tests.py
+
+# Run with coverage
+pytest tests/ --cov=mycoshield
+
+# Run specific test module
+python tests/run_tests.py test_models
+```
+
+- **Unit Tests**: All core components
+- **Integration Tests**: End-to-end workflows
+- **Mocking**: External dependencies
+- **Performance Tests**: Large dataset handling
+
+## 🏆 Competition Readiness
+
+**Choose your demo level**:
+- **Basic Hackathons**: Level 1 (mycoshield-app)
+- **AI/ML Events**: Level 2 (mycoshield-rl)
+- **Security Competitions**: Level 3 (mycoshield-multimodal)
+- **Startup Pitches**: Level 4 (mycoshield-enterprise)
 
 ---
 
-**Built for Shaastra Biogen 2026** 🏆  
-**World's First Mycelium-Inspired RL Cybersecurity System** 🍄🤖
+**From Shaastra Biogen 2026 Winner → Enterprise Security Platform** 🏆  
+**World's First Mycelium-Inspired Multi-Modal Cybersecurity System** 🍄🤖🛡️
