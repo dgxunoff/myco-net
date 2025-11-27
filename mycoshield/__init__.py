@@ -13,6 +13,8 @@ from .data import TrafficParser, ZeekLogTailer
 from .security import SecurityEnforcer, NetworkMonitor
 from .host import HostMonitor, LogAnalyzer, MultiModalDetector
 from .enterprise import EnterpriseMycoShield
+from .aptos_security import AptosSecurityManager, AptosTransactionMonitor, AptosSmartContractInterface
+from .blockchain_integration import BlockchainSecurityOrchestrator, ThreatIntelligenceBlockchain, IncidentResponseBlockchain, DecentralizedSecurityScoring
 
 __all__ = [
     'MyceliumGNN',
@@ -27,5 +29,12 @@ __all__ = [
     'NetworkMonitor',
     'HostMonitor',
     'LogAnalyzer',
-    'MultiModalDetector'
+    'MultiModalDetector',
+    'AptosSecurityManager',
+    'AptosTransactionMonitor',
+    'AptosSmartContractInterface',
+    'BlockchainSecurityOrchestrator',
+    'ThreatIntelligenceBlockchain',
+    'IncidentResponseBlockchain',
+    'DecentralizedSecurityScoring'
 ]

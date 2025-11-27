@@ -38,6 +38,7 @@ setup(
             "mycoshield-rl=apps.rl_app:main",
             "mycoshield-multimodal=apps.multimodal_app:main",
             "mycoshield-enterprise=apps.enterprise_app:main",
+            "mycoshield-blockchain=apps.blockchain_app:main",
         ],
     },
 )
