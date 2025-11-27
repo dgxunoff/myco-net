@@ -8,17 +8,34 @@ import logging
 import json
 import smtplib
 from datetime import datetime
-from email.mime.text import MimeText
-from email.mime.multipart import MimeMultipart
+try:
+    from email.mime.text import MIMEText as MimeText
+    from email.mime.multipart import MIMEMultipart as MimeMultipart
+except ImportError:
+    class MimeText:
+        def __init__(self, *args, **kwargs): pass
+    class MimeMultipart:
+        def __init__(self, *args, **kwargs): pass
 
 class SecurityEnforcer:
-    """Real network security enforcement"""
+    """Real network security enforcement with blockchain integration"""
     
     def __init__(self, config=None):
         self.config = config or {}
         self.blocked_ips = set()
         self.incident_log = []
         self.setup_logging()
+        
+        # Initialize blockchain integration if enabled
+        if self.config.get('aptos', {}).get('enabled', False):
+            try:
+                from .blockchain_integration import BlockchainSecurityOrchestrator
+                self.blockchain = BlockchainSecurityOrchestrator()
+                self.blockchain_enabled = True
+            except ImportError:
+                self.blockchain_enabled = False
+        else:
+            self.blockchain_enabled = False
         
     def setup_logging(self):
         logging.basicConfig(
@@ -132,6 +149,15 @@ class SecurityEnforcer:
         
         with open('security_incidents.json', 'w') as f:
             json.dump(incidents, f, indent=2)
+        
+        # Log to blockchain if enabled
+        if self.blockchain_enabled:
+            try:
+                blockchain_tx = self.blockchain.incident_response.log_security_incident(incident)
+                incident['blockchain_tx'] = blockchain_tx
+                self.logger.info(f"Incident logged to blockchain: {blockchain_tx}")
+            except Exception as e:
+                self.logger.error(f"Blockchain logging failed: {e}")
             
         return incident
     

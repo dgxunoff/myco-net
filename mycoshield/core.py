@@ -87,12 +87,13 @@ class NetworkProcessor:
         return Data(x=X_tensor, edge_index=edge_index), node_list
 
 class ThreatDetector:
-    """Detect threats using trained models"""
+    """Detect threats using trained models with blockchain integration"""
     
-    def __init__(self, model, security_enforcer=None):
+    def __init__(self, model, security_enforcer=None, blockchain_orchestrator=None):
         self.model = model
         self.isolated_nodes = set()
         self.security_enforcer = security_enforcer
+        self.blockchain_orchestrator = blockchain_orchestrator
         
     def detect_anomalies(self, graph_data, node_list, threshold=0.7):
         if graph_data is None:
@@ -109,9 +110,25 @@ class ThreatDetector:
             if score > threshold:
                 self.isolated_nodes.add(node)
                 
+                # Check blockchain threat intelligence
+                blockchain_validated = False
+                if self.blockchain_orchestrator:
+                    try:
+                        blockchain_threat = self.blockchain_orchestrator.threat_intel.query_threat_intelligence(node)
+                        blockchain_validated = blockchain_threat is not None
+                        
+                        # Submit new threat to blockchain
+                        if not blockchain_threat:
+                            self.blockchain_orchestrator.threat_intel.store_threat_signature(
+                                node, f"gnn_detection_{score:.3f}", "anomaly"
+                            )
+                    except Exception as e:
+                        print(f"Blockchain validation error: {e}")
+                
                 # Execute real security actions
                 if self.security_enforcer:
-                    self.security_enforcer.isolate_node(node, score, "ISOLATE")
+                    action_type = "ISOLATE" if blockchain_validated or score > 0.8 else "MONITOR"
+                    self.security_enforcer.isolate_node(node, score, action_type)
             elif score > 0.5:  # Suspicious but not critical
                 if self.security_enforcer:
                     self.security_enforcer.isolate_node(node, score, "MONITOR")
