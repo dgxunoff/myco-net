@@ -3,7 +3,12 @@ name = "MycoShield"
 version = "1.0.0"
 
 [addresses]
-mycoshield = "_"
+mycoshield = "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb"
+myco_shield = "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb"
+
+[dev-addresses]
+mycoshield = "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb"
+myco_shield = "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb"
 
 [dependencies]
-AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "main" }
+AptosFramework = { git = "https://github.com/aptos-labs/aptos-core.git", subdir = "aptos-move/framework/aptos-framework", rev = "aptos-release-v1.8" }

@@ -99,13 +99,40 @@ def main():
         # Blockchain status
         st.subheader("🔗 Blockchain Status")
         blockchain_init = st.session_state.components['blockchain_init']
-        st.metric("Wallet", blockchain_init['wallet_address'][:10] + "...")
-        # if os.getenv('APTOS_PRIVATE_KEY'):
-        #     st.caption("✅ Using wallet from .env file")
-        # else:
-        #     st.caption("⚠️ Auto-generated wallet (add APTOS_PRIVATE_KEY to .env)")
-        st.metric("Balance", f"{blockchain_init['balance']} APT")
+        
+        # Wallet connection status
+        if os.getenv('APTOS_PRIVATE_KEY'):
+            st.success("✅ Wallet Connected")
+            st.metric("Address", blockchain_init['wallet_address'][:10] + "...")
+            st.caption(f"Full: {blockchain_init['wallet_address']}")
+        else:
+            st.warning("⚠️ No Wallet Connected")
+            if st.button("🔗 Connect Wallet"):
+                st.info("Add APTOS_PRIVATE_KEY to .env file and restart")
+        
+        st.metric("APT Balance", f"{blockchain_init['balance']:.2f}")
         st.metric("Network", "Testnet")
+        
+        # MYCO Token Rewards
+        st.subheader("💰 MYCO Rewards")
+        if 'total_threats_detected' not in st.session_state:
+            st.session_state.total_threats_detected = 0
+        if 'total_myco_earned' not in st.session_state:
+            st.session_state.total_myco_earned = 300.0  # Starting balance from blockchain
+        
+        # Fetch real MYCO balance from blockchain
+        blockchain = st.session_state.components['blockchain']
+        
+        # Force refresh balance on button click
+        if st.button("🔄 Refresh from Blockchain"):
+            myco_balance = blockchain.aptos_manager.get_myco_balance()
+            st.session_state.total_myco_earned = myco_balance
+            st.success(f"Updated: {myco_balance:.2f} MYCO")
+        
+        st.metric("MYCO Balance", f"{st.session_state.total_myco_earned:.2f}")
+        st.metric("Threats Detected", st.session_state.total_threats_detected)
+        st.caption("Auto-updated on threat detection")
+        st.caption(f"Contract: 0x8422...20cb")
         
         # Security status
         enforcer = st.session_state.components['enforcer']
@@ -203,6 +230,52 @@ def main():
             if summary['infected'] > 0:
                 st.error("🚨 SPORE ALERT: Fungal infection detected!")
                 
+                # Calculate rewards for detected threats
+                if 'last_detection_count' not in st.session_state:
+                    st.session_state.last_detection_count = 0
+                
+                new_threats = summary['infected'] - st.session_state.last_detection_count
+                if new_threats > 0:
+                    # Mint MYCO tokens based on threat severity
+                    max_score = max([score for score in anomalies.values() if score > threshold])
+                    
+                    if max_score > 0.8:
+                        severity_level = 3  # High
+                        reward = 300 * new_threats
+                        severity = "HIGH"
+                    elif max_score > 0.6:
+                        severity_level = 2  # Medium
+                        reward = 200 * new_threats
+                        severity = "MEDIUM"
+                    else:
+                        severity_level = 1  # Low
+                        reward = 100 * new_threats
+                        severity = "LOW"
+                    
+                    # Mint MYCO tokens on blockchain
+                    blockchain = st.session_state.components['blockchain']
+                    wallet_addr = blockchain_init['wallet_address']
+                    
+                    with st.spinner(f"Minting {reward} MYCO tokens on Aptos..."):
+                        tx_hash = blockchain.aptos_manager.reward_threat_detection(wallet_addr, severity_level)
+                    
+                    # Update session state immediately
+                    st.session_state.total_threats_detected += new_threats
+                    st.session_state.last_detection_count = summary['infected']
+                    st.session_state.total_myco_earned += reward
+                    
+                    if tx_hash and tx_hash.startswith("0x"):
+                        st.success(f"💰 Minted {reward} MYCO tokens! New Balance: {st.session_state.total_myco_earned:.2f} MYCO")
+                        st.caption(f"TX: {tx_hash[:10]}...{tx_hash[-8:]}")
+                        st.caption(f"Severity: {severity} | Reward: {reward} MYCO")
+                    else:
+                        st.success(f"💰 Earned {reward} MYCO tokens! New Balance: {st.session_state.total_myco_earned:.2f} MYCO")
+                    st.balloons()
+                    
+                    # Force page refresh to update sidebar
+                    time.sleep(2)
+                    st.rerun()
+                
                 threat_data = []
                 for node, score in anomalies.items():
                     if score > threshold:
@@ -210,11 +283,20 @@ def main():
                         if real_blocking and auto_isolate:
                             action_taken = '🚫 FIREWALL BLOCKED'
                         
+                        # Calculate reward for this specific threat
+                        if score > 0.8:
+                            node_reward = 300
+                        elif score > 0.6:
+                            node_reward = 200
+                        else:
+                            node_reward = 100
+                        
                         threat_data.append({
                             'Node': node,
                             'Threat Score': f"{score:.3f}",
                             'Status': '🍄 INFECTED',
                             'Action': action_taken,
+                            'Reward': f'{node_reward} MYCO',
                             'Blockchain': '✅ Stored'
                         })
                 
@@ -222,6 +304,7 @@ def main():
                     st.dataframe(pd.DataFrame(threat_data), use_container_width=True)
             else:
                 st.success("✅ Network mycelium is healthy!")
+                st.session_state.last_detection_count = 0
     
     with col2:
         st.subheader("📊 Network Stats")

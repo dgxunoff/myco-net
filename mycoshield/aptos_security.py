@@ -204,15 +204,65 @@ class AptosSecurityManager:
     
     def get_security_reputation(self, node_address):
         """Get security reputation score from blockchain"""
-        if not APTOS_AVAILABLE:
-            return 75  # Mock reputation score
+        if not APTOS_AVAILABLE or not self.account:
+            return 75
+        
+        import subprocess
+        try:
+            result = subprocess.run([
+                "aptos", "move", "view",
+                "--function-id", "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb::myco_reward::get_node_stats",
+                "--args", f"address:{node_address}"
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                return int(data["Result"][0])  # reputation_score
+        except:
+            pass
         return 75
     
-    def reward_threat_detection(self, detector_address, reward_amount):
-        """Reward successful threat detection"""
-        if not APTOS_AVAILABLE:
-            return f"mock_reward_{detector_address}_{reward_amount}"
-        return f"mock_reward_{detector_address}_{reward_amount}"
+    def get_myco_balance(self):
+        """Get MYCO token balance from node stats"""
+        if not APTOS_AVAILABLE or not self.account:
+            return 0
+        
+        import subprocess
+        try:
+            result = subprocess.run([
+                "aptos", "move", "view",
+                "--function-id", "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb::myco_reward::get_node_stats",
+                "--args", f"address:{str(self.account.address())}"
+            ], capture_output=True, text=True, timeout=10)
+            
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                rewards = int(data["Result"][2])  # total_rewards_earned
+                return rewards / 100000000
+        except Exception as e:
+            print(f"Balance fetch error: {e}")
+        return 0
+    
+    def reward_threat_detection(self, detector_address, severity):
+        """Mint MYCO tokens for threat detection (severity: 1=low, 2=medium, 3=high)"""
+        if not APTOS_AVAILABLE or not self.account:
+            return f"mock_reward_{detector_address}_{severity}"
+        
+        import subprocess
+        try:
+            result = subprocess.run([
+                "aptos", "move", "run",
+                "--function-id", "0x84226fc4b809a744f0195c0d63d51e51e96e85881f6cd26e1102cfe758ce20cb::myco_reward::reward_threat_detection",
+                "--args", f"address:{detector_address}", f"u64:{severity}", "bool:true",
+                "--assume-yes"
+            ], capture_output=True, text=True, timeout=15)
+            
+            if result.returncode == 0:
+                data = json.loads(result.stdout)
+                return data["Result"]["transaction_hash"]
+        except Exception as e:
+            print(f"Minting error: {e}")
+        return f"mock_reward_{detector_address}_{severity}"
 
 class AptosTransactionMonitor:
     """Monitor Aptos transactions for security events"""

@@ -26,6 +26,10 @@ class ThreatIntelligenceBlockchain:
             results.append(tx_hash)
         return results
     
+    def query_threat_intelligence(self, ip_address):
+        """Query threat intelligence from blockchain"""
+        return self.aptos_manager.query_threat_intelligence(ip_address)
+    
     def validate_threat_consensus(self, ip_address, validators):
         """Implement consensus-based threat validation"""
         consensus_score = 0
