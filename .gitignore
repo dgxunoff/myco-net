@@ -1,4 +1,5 @@
-# MycoShield - Git Ignore
+# Environment variables
+.env
 
 # Python
 __pycache__/
@@ -6,6 +7,9 @@ __pycache__/
 *$py.class
 *.so
 .Python
+env/
+venv/
+ENV/
 build/
 develop-eggs/
 dist/
@@ -22,30 +26,38 @@ wheels/
 .installed.cfg
 *.egg
 
-# PyTorch
-*.pth
-*.pt
-
-# Data files
-*.pcap
-*.pcapng
-temp.pcap
-demo_attack.pcap
-
-# Streamlit
-.streamlit/
-
-# IDE
-.vscode/
+# PyCharm
 .idea/
-*.swp
-*.swo
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Logs
+*.log
+mycoshield_incidents.log
+security_incidents.json
+monitoring_rules.json
+
+# Temporary files
+temp.pcap
+test_*.py
+
+# Aptos wallet config
+.aptos/
+wallet_config.json
+
+# Security data (keep demo_traffic.json for demo)
+security_incidents.json
+monitoring_rules.json
+
+# Model files (keeping mycoshield_nslkdd.pth for demo)
 
 # OS
 .DS_Store
 Thumbs.db
 
-# Logs
-*.log
-
-env
+# Streamlit cache
+.streamlit/

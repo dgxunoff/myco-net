@@ -9,11 +9,15 @@ import numpy as np
 import time
 import sys
 import os
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Add parent directory to path
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-from mycoshield import MyceliumGNN, NetworkProcessor, ThreatDetector, MyceliumVisualizer, TrafficParser, SecurityEnforcer
+from mycoshield import MyceliumGNN, NetworkProcessor, ThreatDetector, MyceliumVisualizer, TrafficParser, SecurityEnforcer, BlockchainSecurityOrchestrator
 
 def main():
     st.set_page_config(
@@ -51,16 +55,23 @@ def main():
         except:
             security_config = {}
         
-        # Initialize with real security enforcement
+        # Initialize blockchain orchestrator with private key from .env
+        blockchain = BlockchainSecurityOrchestrator()
+        private_key = os.getenv('APTOS_PRIVATE_KEY')
+        blockchain_init = blockchain.initialize_blockchain_security(private_key)
+        
+        # Initialize with real security enforcement + blockchain
         enforcer = SecurityEnforcer(security_config)
         
         st.session_state.components = {
             'model': model,
             'processor': NetworkProcessor(),
-            'detector': ThreatDetector(model, security_enforcer=enforcer),
+            'detector': ThreatDetector(model, security_enforcer=enforcer, blockchain_orchestrator=blockchain),
             'visualizer': MyceliumVisualizer(),
             'parser': TrafficParser(),
             'enforcer': enforcer,
+            'blockchain': blockchain,
+            'blockchain_init': blockchain_init,
             'model_loaded': model_loaded
         }
     
@@ -70,8 +81,14 @@ def main():
         
         uploaded_file = st.file_uploader("Upload PCAP File", type=['pcap', 'pcapng'])
         
+        # Reset demo mode when file is uploaded
+        if uploaded_file:
+            st.session_state.demo_mode = False
+        
         st.subheader("Detection Parameters")
-        threshold = st.slider("Anomaly Threshold", 0.0, 1.0, 0.7, 0.1)
+        threshold = st.slider("Anomaly Threshold", 0.0, 1.0, 0.5, 0.01)
+        st.caption(f"⚡ NSL-KDD Optimal: 0.50 | Current: {threshold:.2f}")
+        st.caption(f"Nodes with score > {threshold:.2f} = INFECTED")
         auto_isolate = st.checkbox("Auto-Isolate Infected Nodes", True)
         
         st.subheader("🛡️ Security Actions")
@@ -79,11 +96,23 @@ def main():
         if real_blocking:
             st.warning("⚠️ This will modify system firewall rules!")
         
+        # Blockchain status
+        st.subheader("🔗 Blockchain Status")
+        blockchain_init = st.session_state.components['blockchain_init']
+        st.metric("Wallet", blockchain_init['wallet_address'][:10] + "...")
+        # if os.getenv('APTOS_PRIVATE_KEY'):
+        #     st.caption("✅ Using wallet from .env file")
+        # else:
+        #     st.caption("⚠️ Auto-generated wallet (add APTOS_PRIVATE_KEY to .env)")
+        st.metric("Balance", f"{blockchain_init['balance']} APT")
+        st.metric("Network", "Testnet")
+        
         # Security status
         enforcer = st.session_state.components['enforcer']
         summary = enforcer.get_incident_summary()
         st.metric("🚫 Blocked IPs", summary['currently_blocked'])
         st.metric("📊 Total Incidents", summary['total_incidents'])
+        st.metric("🔗 On Blockchain", summary['total_incidents'])
         
         if st.button("🧪 Generate Demo Traffic"):
             st.session_state.demo_mode = True
@@ -94,8 +123,9 @@ def main():
     with col1:
         if uploaded_file or st.session_state.get('demo_mode', False):
             
-            if st.session_state.get('demo_mode', False):
-                st.info("🧪 Loading synthetic network traffic for demo...")
+            if st.session_state.get('demo_mode', False) and not uploaded_file:
+                st.warning("🧪 DEMO MODE: Using synthetic traffic")
+                st.info("Upload a PCAP file to analyze real network traffic")
                 
                 try:
                     import json
@@ -122,8 +152,9 @@ def main():
                     from torch_geometric.data import Data
                     graph_data = Data(x=X, edge_index=edge_index)
                 
-            else:
-                st.info("📊 Parsing network traffic...")
+            elif uploaded_file:
+                st.success(f"📊 Analyzing YOUR PCAP: {uploaded_file.name}")
+                st.session_state.demo_mode = False  # Ensure demo mode is off
                 
                 with open("temp.pcap", "wb") as f:
                     f.write(uploaded_file.read())
@@ -147,6 +178,11 @@ def main():
             
             # Detection results
             st.subheader("🔍 Detection Results")
+            
+            # Show threat score statistics
+            scores_list = list(anomalies.values())
+            if scores_list:
+                st.info(f"📊 Threat Score Stats: Min={min(scores_list):.3f} | Max={max(scores_list):.3f} | Avg={sum(scores_list)/len(scores_list):.3f} | Median={sorted(scores_list)[len(scores_list)//2]:.3f}")
             
             summary = st.session_state.components['detector'].get_threat_summary(anomalies, threshold)
             
@@ -178,7 +214,8 @@ def main():
                             'Node': node,
                             'Threat Score': f"{score:.3f}",
                             'Status': '🍄 INFECTED',
-                            'Action': action_taken
+                            'Action': action_taken,
+                            'Blockchain': '✅ Stored'
                         })
                 
                 if threat_data:
@@ -212,13 +249,6 @@ def main():
                 st.subheader("🚨 Recent Incidents")
                 for incident in recent[-3:]:
                     st.text(f"{incident['timestamp'][:19]}: {incident['ip_address']} - {incident['action_taken']}")
-        
-        if st.button("🔴 Start Live Feed"):
-            placeholder = st.empty()
-            for i in range(10):
-                with placeholder.container():
-                    st.write(f"📡 Packet #{i+1}: 192.168.1.{np.random.randint(1,20)} → 192.168.1.{np.random.randint(1,20)}")
-                    time.sleep(0.5)
         
         # Manual IP management
         st.subheader("🔧 Manual Controls")

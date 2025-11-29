@@ -6,7 +6,16 @@ import torch
 import numpy as np
 import networkx as nx
 from sklearn.preprocessing import StandardScaler
-from torch_geometric.data import Data
+
+try:
+    from torch_geometric.data import Data
+except ImportError:
+    # Fallback Data class
+    class Data:
+        def __init__(self, x=None, edge_index=None, y=None):
+            self.x = x
+            self.edge_index = edge_index
+            self.y = y
 
 class NetworkProcessor:
     """Process network data into graph structures"""
@@ -127,7 +136,8 @@ class ThreatDetector:
                 
                 # Execute real security actions
                 if self.security_enforcer:
-                    action_type = "ISOLATE" if blockchain_validated or score > 0.8 else "MONITOR"
+                    # If score > threshold, it's infected - ISOLATE it
+                    action_type = "ISOLATE"
                     self.security_enforcer.isolate_node(node, score, action_type)
             elif score > 0.5:  # Suspicious but not critical
                 if self.security_enforcer:

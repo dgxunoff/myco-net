@@ -5,16 +5,31 @@ Enterprise-grade endpoint security for MycoShield
 import os
 import platform
 import subprocess
-import winreg
-import ctypes
 import hashlib
-import yara
 import sqlite3
 from datetime import datetime
 import psutil
 import requests
 import json
 from collections import defaultdict
+import re
+import time
+
+# Optional imports with fallbacks
+try:
+    import winreg
+except ImportError:
+    winreg = None
+    
+try:
+    import yara
+except ImportError:
+    yara = None
+    
+try:
+    import ctypes
+except ImportError:
+    ctypes = None
 
 class RegistryMonitor:
     """Monitor Windows Registry modifications"""
@@ -31,7 +46,7 @@ class RegistryMonitor:
     
     def establish_baseline(self):
         """Establish registry baseline"""
-        if platform.system() != 'Windows':
+        if platform.system() != 'Windows' or winreg is None:
             return
             
         for key_path in self.monitored_keys:
@@ -218,6 +233,9 @@ class MalwareScanner:
     
     def _load_yara_rules(self):
         """Load YARA rules for malware detection"""
+        if yara is None:
+            return None
+            
         rules_content = '''
         rule Suspicious_PowerShell {
             strings:

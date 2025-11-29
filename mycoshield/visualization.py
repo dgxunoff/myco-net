@@ -2,6 +2,7 @@
 3D Visualization for MycoShield mycelium networks
 """
 
+import torch
 import networkx as nx
 import plotly.graph_objects as go
 

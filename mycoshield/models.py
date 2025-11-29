@@ -5,7 +5,20 @@ Neural Network Models for MycoShield
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from torch_geometric.nn import GCNConv
+
+try:
+    from torch_geometric.nn import GCNConv
+    TORCH_GEOMETRIC_AVAILABLE = True
+except ImportError:
+    TORCH_GEOMETRIC_AVAILABLE = False
+    # Fallback implementation
+    class GCNConv(nn.Module):
+        def __init__(self, in_channels, out_channels):
+            super().__init__()
+            self.linear = nn.Linear(in_channels, out_channels)
+        
+        def forward(self, x, edge_index):
+            return F.relu(self.linear(x))
 
 class MyceliumGNN(nn.Module):
     """Graph Neural Network for mycelium-inspired threat detection"""

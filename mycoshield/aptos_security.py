@@ -3,13 +3,14 @@ Aptos Blockchain Security Integration for MycoShield
 """
 
 try:
-    from aptos_sdk.client import RestClient
+    from aptos_sdk.async_client import RestClient
     from aptos_sdk.account import Account
     from aptos_sdk.transactions import EntryFunction, TransactionArgument, TransactionPayload
     APTOS_AVAILABLE = True
-except ImportError:
+except (ImportError, ModuleNotFoundError, AttributeError) as e:
     APTOS_AVAILABLE = False
-    print("Aptos SDK not available. Install with: pip install aptos-sdk")
+    print(f"Warning: Aptos SDK not properly installed ({e}). Running in mock mode.")
+    print("Install with: pip install aptos-sdk==0.8.6")
 
 import asyncio
 import json
@@ -45,24 +46,57 @@ class AptosSecurityManager:
             return {"aptos": {"enabled": False}}
         
     def connect_wallet(self, private_key=None):
-        """Connect to Aptos wallet"""
+        """Connect to Aptos wallet (Petra or generated)"""
         if not APTOS_AVAILABLE:
             return "aptos_sdk_not_available"
             
         if private_key:
+            # Remove ed25519-priv- prefix if present
+            if isinstance(private_key, str) and private_key.startswith("ed25519-priv-"):
+                private_key = private_key[13:]
+            # Remove 0x prefix if present
+            if isinstance(private_key, str) and private_key.startswith("0x"):
+                private_key = private_key[2:]
             self.account = Account.load_key(private_key)
+            print(f"Connected to wallet: {str(self.account.address())}")
         else:
             self.account = Account.generate()
+            print(f"Generated new wallet: {str(self.account.address())}")
+        
+        # Fetch and cache balance immediately
+        self.cached_balance = self._fetch_balance_sync()
         return str(self.account.address())
     
-    def get_balance(self):
-        """Get APT balance"""
+    def _fetch_balance_sync(self):
+        """Internal method to fetch balance synchronously"""
         if not APTOS_AVAILABLE or not self.account:
             return 0
+        
+        # Use aptos CLI to fetch balance (most reliable method)
+        import subprocess
+        
         try:
-            return self.client.account_balance(self.account.address())
-        except:
+            result = subprocess.run(
+                ["aptos", "account", "balance", "--account", str(self.account.address())],
+                capture_output=True,
+                text=True,
+                timeout=5
+            )
+            if result.returncode == 0:
+                # Parse JSON output from aptos CLI
+                import json
+                data = json.loads(result.stdout)
+                balance_octas = int(data["Result"][0]["balance"])
+                return balance_octas / 100000000
+            else:
+                return 0
+        except Exception as e:
+            print(f"Balance fetch error: {e}")
             return 0
+    
+    def get_balance(self):
+        """Get cached APT balance"""
+        return getattr(self, 'cached_balance', 0)
     
     def submit_threat_data(self, threat_ip, threat_score, threat_type):
         """Submit threat data to blockchain"""

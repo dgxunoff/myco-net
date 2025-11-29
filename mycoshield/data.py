@@ -5,8 +5,17 @@ Data processing and ingestion for MycoShield
 import torch
 import numpy as np
 import networkx as nx
-from torch_geometric.data import Data
 from sklearn.preprocessing import StandardScaler
+
+try:
+    from torch_geometric.data import Data
+except ImportError:
+    class Data:
+        def __init__(self, x=None, edge_index=None, y=None, edge_attr=None):
+            self.x = x
+            self.edge_index = edge_index
+            self.y = y
+            self.edge_attr = edge_attr
 import subprocess
 import threading
 import queue
@@ -31,20 +40,20 @@ class TrafficParser:
                 
                 features = {
                     'packet_size': len(pkt),
-                    'protocol': pkt[IP].proto,
-                    'ttl': pkt[IP].ttl,
+                    'protocol': int(pkt[IP].proto),
+                    'ttl': int(pkt[IP].ttl),
                     'flags': 0,
                     'port_src': 0,
                     'port_dst': 0
                 }
                 
                 if TCP in pkt:
-                    features['flags'] = pkt[TCP].flags
-                    features['port_src'] = pkt[TCP].sport
-                    features['port_dst'] = pkt[TCP].dport
+                    features['flags'] = int(pkt[TCP].flags)
+                    features['port_src'] = int(pkt[TCP].sport)
+                    features['port_dst'] = int(pkt[TCP].dport)
                 elif UDP in pkt:
-                    features['port_src'] = pkt[UDP].sport
-                    features['port_dst'] = pkt[UDP].dport
+                    features['port_src'] = int(pkt[UDP].sport)
+                    features['port_dst'] = int(pkt[UDP].dport)
                 
                 flow_key = f"{src_ip}->{dst_ip}"
                 if flow_key not in flows:
@@ -88,13 +97,14 @@ class TrafficParser:
         X = []
         for node in node_list:
             if node_features[node]:
-                feat = np.mean(node_features[node], axis=0)
+                feat = np.mean(np.array(node_features[node]), axis=0)
             else:
                 feat = np.zeros(feature_dim)
             X.append(feat)
         
+        X = np.array(X)
+        X = self.scaler.fit_transform(X)
         X = torch.tensor(X, dtype=torch.float)
-        X = torch.tensor(self.scaler.fit_transform(X), dtype=torch.float)
         
         edge_index = []
         edge_weights = []

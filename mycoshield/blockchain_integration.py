@@ -156,10 +156,11 @@ class BlockchainSecurityOrchestrator:
     def initialize_blockchain_security(self, private_key=None):
         """Initialize complete blockchain security system"""
         wallet_address = self.aptos_manager.connect_wallet(private_key)
+        balance = self.aptos_manager.get_balance()
         
         return {
             "wallet_address": wallet_address,
-            "balance": self.aptos_manager.get_balance(),
+            "balance": balance,
             "threat_intel_ready": True,
             "incident_response_ready": True,
             "scoring_system_ready": True
