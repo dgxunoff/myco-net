@@ -11,8 +11,6 @@ from .visualization import MyceliumVisualizer
 from .rl import MyceliumRLAgent
 from .data import TrafficParser, ZeekLogTailer
 from .security import SecurityEnforcer, NetworkMonitor
-from .host import HostMonitor, LogAnalyzer, MultiModalDetector
-from .enterprise import EnterpriseMycoShield
 from .aptos_security import AptosSecurityManager, AptosTransactionMonitor, AptosSmartContractInterface
 from .blockchain_integration import BlockchainSecurityOrchestrator, ThreatIntelligenceBlockchain, IncidentResponseBlockchain, DecentralizedSecurityScoring
 
@@ -27,9 +25,6 @@ __all__ = [
     'ZeekLogTailer',
     'SecurityEnforcer',
     'NetworkMonitor',
-    'HostMonitor',
-    'LogAnalyzer',
-    'MultiModalDetector',
     'AptosSecurityManager',
     'AptosTransactionMonitor',
     'AptosSmartContractInterface',
