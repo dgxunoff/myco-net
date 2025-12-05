@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  mycoshield:
+    build: .
+    ports:
+      - "8501:8501"
+    environment:
+      - APTOS_PRIVATE_KEY=${APTOS_PRIVATE_KEY}
+    volumes:
+      - ./mycoshield_nslkdd.pth:/app/mycoshield_nslkdd.pth
+      - ./security_config.json:/app/security_config.json
+      - ./demo_traffic.json:/app/demo_traffic.json
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8501/_stcore/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
