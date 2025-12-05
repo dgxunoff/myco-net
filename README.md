@@ -7,15 +7,14 @@ AI-powered cybersecurity system that mimics fungal networks to detect threats an
 ## 🚀 Quick Start
 
 ```bash
-# Install the package
-pip install -e .
+# Install dependencies
+pip install -r requirements.txt
 
-# Run different security levels
-mycoshield-app          # Level 1: Basic network detection
-mycoshield-rl           # Level 2: AI-enhanced detection  
-mycoshield-multimodal   # Level 3: Multi-source detection
-mycoshield-enterprise   # Level 4: Complete security platform
-mycoshield-blockchain   # Level 5: Blockchain-enhanced security
+# Run MycoShield
+streamlit run apps/streamlit_app.py
+
+# Check MYCO balance
+python check_myco.py
 ```
 
 ## 🧬 How It Works (Simple Explanation)
@@ -63,50 +62,27 @@ mycoshield-blockchain   # Level 5: Blockchain-enhanced security
 
 **In Simple Terms**: Blockchain makes MycoShield's security decisions more trustworthy, permanent, and globally shared!
 
-## 🎮 Choose Your Security Level
+## 🎯 Features
 
-### **Level 1: Basic Detection** 🍄
-```bash
-mycoshield-app
-```
-- Upload network files for analysis
-- See 3D mycelium network visualization
-- Basic threat detection
+### **🤖 AI-Powered Detection**
+- Graph Neural Networks trained on NSL-KDD dataset
+- 80%+ accuracy on real attack data
+- Real-time threat scoring
+- 3D network visualization
 
-### **Level 2: AI-Enhanced** 🤖
-```bash
-mycoshield-rl
-```
-- Smart AI that learns from threats
-- Automatic decision making
-- Advanced threat response
+### **🔗 Blockchain Integration**
+- MYCO token rewards (300 MYCO earned!)
+- Deployed on Aptos testnet
+- Automatic minting on threat detection
+- Permanent security audit trail
+- Reputation system (77/100)
 
-### **Level 3: Multi-Source** 🔍
-```bash
-mycoshield-multimodal
-```
-- Monitors network + computer + logs
-- Real firewall blocking
-- Live threat monitoring
-
-### **Level 4: Enterprise** 🏢
-```bash
-mycoshield-enterprise
-```
-- Complete business security
-- Malware detection
-- Automated incident response
-- Security dashboard
-
-### **Level 5: Blockchain-Powered** 🔗
-```bash
-mycoshield-blockchain
-```
-- Decentralized threat intelligence
-- Permanent security records
-- Multi-signature approvals
-- Token rewards for good security work
-- Global threat sharing
+### **🛡️ Security Actions**
+- Automatic threat isolation
+- Firewall integration
+- Real-time monitoring
+- Incident logging
+- Manual IP blocking/unblocking
 
 ## 🤖 How AI Makes Decisions
 
@@ -176,12 +152,26 @@ mycoshield-blockchain
 
 ```
 MycoNet/
-├── mycoshield/           # Main security code
-├── apps/                 # Different security levels
-├── contracts/            # Blockchain smart contracts
-├── tests/                # Testing code
-├── requirements.txt      # Required packages
-└── README.md            # This file
+├── apps/
+│   └── streamlit_app.py          # Main web interface
+├── mycoshield/                   # Core modules
+│   ├── aptos_security.py         # Blockchain integration
+│   ├── blockchain_integration.py # Security orchestrator
+│   ├── core.py                   # Threat detection
+│   ├── models.py                 # GNN models
+│   ├── security.py               # Security enforcement
+│   └── visualization.py          # 3D visualization
+├── contracts/
+│   ├── sources/                  # Move smart contracts
+│   │   └── MycoRewardToken.move  # MYCO token
+│   ├── Move.toml                 # Contract config
+│   └── deploy_contracts.py       # Deployment script
+├── tests/                        # Test suite
+├── .env                          # Wallet configuration
+├── check_myco.py                 # Balance checker
+├── mycoshield_nslkdd.pth         # Trained AI model
+├── requirements.txt              # Dependencies
+└── README.md                     # This file
 ```
 
 ## 🎪 Demo Ideas
@@ -206,26 +196,47 @@ MycoNet/
 - Real-time threat monitoring
 - Automated incident response
 
-## 🧪 Testing
+## 🧪 Testing & Usage
 
 ```bash
-# Test everything
-python tests/run_tests.py
+# Check MYCO balance
+python check_myco.py
 
-# Test blockchain features
-python -m pytest tests/test_blockchain.py
+# Run main application
+streamlit run apps/streamlit_app.py
 
-# Run demo
-python blockchain_demo.py
+# Mint MYCO tokens manually
+aptos move run \
+  --function-id 0x84226fc4...::myco_reward::reward_threat_detection \
+  --args address:0x84226fc4... u64:3 bool:true --assume-yes
+
+# Run tests
+python -m pytest tests/
 ```
 
-## 🏆 Perfect For
+## 🏆 Current Status
 
-- **🏫 Hackathons**: Unique bio-inspired approach with beautiful visualizations
-- **🤖 AI Competitions**: Advanced machine learning with reinforcement learning
-- **🔗 Blockchain Events**: World's first blockchain-powered cybersecurity
-- **🏢 Business Demos**: Complete enterprise security solution
-- **🎓 Research**: Novel approach combining biology, AI, and blockchain
+- ✅ **MYCO Token**: Live on Aptos testnet
+- ✅ **Balance**: 300 MYCO earned
+- ✅ **Reputation**: 77/100
+- ✅ **Threats Detected**: 2
+- ✅ **Network**: Aptos Testnet
+
+## 🎯 Perfect For
+
+- **🏫 Hackathons**: Real blockchain integration + AI detection
+- **🤖 AI Competitions**: GNN trained on NSL-KDD dataset
+- **🔗 Blockchain Events**: Working MYCO token on Aptos
+- **🏢 Business Demos**: Production-ready security platform
+- **🎓 Research**: Novel bio-inspired + blockchain approach
+
+## 📚 Documentation
+
+- `QUICK_START.md` - Quick reference guide
+- `DEPLOYMENT_SUCCESS.md` - Deployment details
+- `MYCO_APTOS_EXPLAINED.md` - Token architecture
+- `WORKING_COMMANDS.md` - All commands
+- `FINAL_SETUP.md` - Complete setup guide
 
 ---
 
